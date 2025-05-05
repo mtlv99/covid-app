@@ -1,99 +1,50 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Swal from 'sweetalert2';
 import {
-  onAddNewDiagnosis, onDeleteDiagnosis, onSetActiveDiagnosis, onUpdateDiagnosis, onLoadDiagnoses,
+  onSetActiveDiagnoseUrl, onLoadImageList, onSetActiveDiagnosePrediction,
+  onClearActiveDiagnose, onStartLoadingImageList,
 } from '../store';
 import { covidApi } from '../api';
 
 export const useCovidStore = () => {
   const dispatch = useDispatch();
-  const { diagnoses, activeDiagnosis } = useSelector((state) => state.covid);
+  const { diagnoses, activeDiagnose } = useSelector((state) => state.covid);
 
-  const setActiveDiagnosis = (diagnosis) => {
-    dispatch(onSetActiveDiagnosis(diagnosis));
+  // { rawUrl, filterUrl, filterType }
+  const setActiveDiagnoseUrls = (diagnose) => {
+    dispatch(onSetActiveDiagnoseUrl(diagnose));
   };
 
-  const startSavingDiagnosis = async (diagnosis) => {
-    // Recordar que la manera de saber si debe crear un diagnosis nuevo, o actualizar
-    // uno existente, es por medio de la existencia de un `id`.
-    // eslint-disable-next-line no-underscore-dangle
-    try {
-      const { data } = await covidApi.post('/diagnoses/', diagnosis);
-
-      dispatch(onAddNewDiagnosis({
-        ...diagnosis,
-        id: data.id,
-        created: data.created,
-        has_diabetes: data.has_diabetes,
-      }));
-
-      // Show a success toast when deletion is complete
-      Swal.fire({
-        icon: 'success',
-        title: 'Diagnóstico agregado con éxito',
-        toast: true,
-        position: 'bottom-end',
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-      });
-
-      return true;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error al guardar', error);
-      Swal.fire('Error al guardar', error.response.data?.msg, 'error');
-      return false;
-    }
+  // { rawUrl, filterUrl, filterType }
+  const setActiveDiagnosePrediction = (diagnose) => {
+    dispatch(onSetActiveDiagnosePrediction(diagnose));
   };
 
-  const startDeletingDiagnosis = async (id) => {
-    try {
-      await covidApi.delete('/diagnoses/', {
-        data: { id },
-      });
-
-      dispatch(onDeleteDiagnosis({ id }));
-
-      // Show a success toast when deletion is complete
-      Swal.fire({
-        icon: 'success',
-        title: 'Diagnóstico eliminado con éxito',
-        toast: true,
-        position: 'bottom-end',
-        showConfirmButton: false,
-        timerProgressBar: true,
-      });
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('Error al borrar', error);
-      Swal.fire('Error al borrar', error.response.data?.msg, 'error');
-    }
+  const clearActiveDiagnose = () => {
+    dispatch(onClearActiveDiagnose());
   };
 
-  const startLoadingDiagnoses = async () => {
+  const startLoadingImageList = async ({ pageNumber = 1, pageSize = 5 }) => {
     try {
-      const { data } = await covidApi.get('/diagnoses');
-      const foundDiagnoses = data.Diagnosis;
+      dispatch(onStartLoadingImageList());
 
-      dispatch(onLoadDiagnoses(foundDiagnoses));
+      const { data: foundData } = await covidApi.post(`/images/?page=${pageNumber}&page_size=${pageSize}`);
+
+      dispatch(onLoadImageList(foundData));
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('Error cargando diagnosticos', error);
+      console.error('Error cargando imagenes', error);
     }
   };
 
   return {
     // Propiedades
     diagnoses,
-    activeDiagnosis,
-    hasDiagnosisSelected: !!activeDiagnosis,
-
+    activeDiagnose,
+    hasSelectedImage: !!activeDiagnose.originalUrl,
     // Metodos
-    setActiveDiagnosis,
-    startSavingDiagnosis,
-    startDeletingDiagnosis,
-    startLoadingDiagnoses,
+    setActiveDiagnoseUrls,
+    setActiveDiagnosePrediction,
+    startLoadingImageList,
+    clearActiveDiagnose,
   };
 };

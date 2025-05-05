@@ -5,58 +5,51 @@ import { createSlice } from '@reduxjs/toolkit';
 export const covidSlice = createSlice({
   name: 'covid',
   initialState: {
-    isLoadingDiagnoses: true,
-    diagnoses: [],
-    activeDiagnosis: null,
+    isLoadingImageList: true,
+    imageList: {
+      count: 0,
+      num_pages: 0,
+      results: [],
+    },
+    activeDiagnose: {
+      originalUrl: '',
+      processed: {
+        url: '',
+        filterType: '',
+      },
+      prediction: {
+        label: '',
+        confidence: 0,
+      },
+    },
   },
   reducers: {
-    onSetActiveDiagnosis: (state, { payload }) => {
-      state.activeDiagnosis = payload;
+    // { rawUrl, raw_url, processed_url } = payload
+    onSetActiveDiagnoseUrl: (state, { payload }) => {
+      state.activeDiagnose.url = payload.raw_url;
+      state.activeDiagnose.processed.url = payload.processed_url;
+      state.activeDiagnose.processed.filterType = payload.filterType;
     },
-    onClearActiveDiagnosis: (state) => {
-      state.activeDiagnosis = null;
+    // { prediction, confidence } = payload
+    onSetActiveDiagnosePrediction: (state, { payload }) => {
+      state.activeDiagnose.prediction.label = payload.label;
+      state.activeDiagnose.prediction.confidence = payload.confidence;
     },
-    onAddNewDiagnosis: (state, { payload }) => {
-      state.diagnoses.push(payload);
-      state.activeDiagnosis = null;
+    onClearActiveDiagnose: (state) => {
+      state.activeDiagnose = covidSlice.getInitialState().activeDiagnose;
     },
-    onUpdateDiagnosis: (state, { payload }) => {
-      state.diagnoses = state.diagnoses.map((diagnosis) => {
-        // Si el diagnosis coincide, entonces retorna lo que viene en el payload,
-        // en vez de lo que está actualmente en el store.
-        if (diagnosis.id === payload.id) {
-          return payload;
-        }
-        return diagnosis;
-      });
+    onLoadImageList: (state, { payload = [] }) => {
+      state.isLoadingImageList = false;
+      state.imageList = payload;
     },
-    onDeleteDiagnosis: (state, { payload }) => {
-      // Acá filtra por todos los elementos que NO tengan el id del diagnosis activo,
-      // por que basicamente termina excluyendo/borrando el diagnosis activo.
-      // También se debe comprobar si hay un diagnosis activo para poder borrar:
-      // si no, tratará de leer un 'id' de una propiedad en null.
-      state.diagnoses = state.diagnoses.filter((diagnosis) => diagnosis.id !== payload.id);
-    },
-    onLoadDiagnoses: (state, { payload = [] }) => {
-      state.isLoadingDiagnoses = false;
-
-      payload.forEach((diagnosis) => {
-        const exists = state.diagnoses.some((dbDiagnosis) => dbDiagnosis.id === diagnosis.id);
-        if (!exists) {
-          state.diagnoses.push(diagnosis);
-        }
-      });
-    },
-    onLogoutDiagnoses: (state) => {
-      state.isLoadingDiagnoses = true;
-      state.diagnoses = [];
-      state.activeDiagnosis = null;
+    onStartLoadingImageList: (state) => {
+      state.isLoadingImageList = true;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
 export const {
-  onSetActiveDiagnosis, onClearActiveDiagnosis, onAddNewDiagnosis,
-  onUpdateDiagnosis, onDeleteDiagnosis, onLoadDiagnoses, onLogoutDiagnoses,
+  onSetActiveDiagnoseUrl, onSetActiveDiagnosePrediction, onClearActiveDiagnose,
+  onLoadImageList, onStartLoadingImageList,
 } = covidSlice.actions;

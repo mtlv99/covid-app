@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { onClearActiveDiagnosis, onCloseDiagnosisModal, onOpenDiagnosisModal } from '../store';
+import { onClearActiveDiagnose, onCloseDiagnosisModal, onOpenDiagnosisModal } from '../store';
 
 export const useUiStore = () => {
   const dispatch = useDispatch();
@@ -12,7 +12,7 @@ export const useUiStore = () => {
 
   const closeDiagnosisModal = () => {
     dispatch(onCloseDiagnosisModal());
-    dispatch(onClearActiveDiagnosis());
+    dispatch(onClearActiveDiagnose());
   };
 
   const toggleDiagnosisModal = () => {
