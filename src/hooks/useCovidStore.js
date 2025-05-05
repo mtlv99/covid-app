@@ -7,7 +7,7 @@ import { covidApi } from '../api';
 
 export const useCovidStore = () => {
   const dispatch = useDispatch();
-  const { diagnoses, activeDiagnose } = useSelector((state) => state.covid);
+  const { imageList, activeDiagnose } = useSelector((state) => state.covid);
 
   // { rawUrl, filterUrl, filterType }
   const setActiveDiagnoseUrls = (diagnose) => {
@@ -40,7 +40,7 @@ export const useCovidStore = () => {
 
   return {
     // Propiedades
-    diagnoses,
+    imageList,
     activeDiagnose,
     hasSelectedImage: !!activeDiagnose.originalUrl,
     // Metodos

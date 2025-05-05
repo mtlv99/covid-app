@@ -5,20 +5,20 @@ import {
   Menu,
   MenuItem,
   Button,
+  ImageList,
+  ImageListItem,
+  Chip,
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { CovidModal } from '../components/CovidModal';
-import { FabAddNew } from '../components/FabAddNew';
-import { useCovidStore } from '../../hooks';
-import { CovidTable } from '../components/CovidTable';
 import { LayoutBase } from '../components/LayoutBase';
+import { useCovidStore } from '../../hooks';
 
 export const CovidPage = () => {
-  const { diagnoses, startLoadingImageList } = useCovidStore();
+  const { imageList, startLoadingImageList } = useCovidStore();
   const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
-    startLoadingImageList({ pageNumber: 1, pageSize: 5 });
+    startLoadingImageList({ pageNumber: 1, pageSize: 20 });
   }, []);
 
   const handleClick = (event) => {
@@ -29,9 +29,13 @@ export const CovidPage = () => {
     setAnchorEl(null);
   };
 
+  const handleImageClick = (image) => {
+    console.log('Clicked image:', image);
+  };
+
   return (
     <LayoutBase>
-      <Box display="flex" alignItems="center" justifyContent="space-between">
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
         <Typography variant="h4">Lista de Diagnósticos</Typography>
         <Button
           aria-controls="export-menu"
@@ -52,10 +56,63 @@ export const CovidPage = () => {
         </Menu>
       </Box>
 
-      <CovidTable data={diagnoses} />
-
-      <CovidModal />
-      <FabAddNew />
+      <ImageList cols={4} gap={16}>
+        {imageList.results?.map((image) => (
+          <ImageListItem
+            key={image.filename}
+            sx={{
+              position: 'relative',
+              cursor: 'pointer',
+              overflow: 'hidden',
+              borderRadius: 2,
+              '&:hover .chip-container': {
+                opacity: 1,
+              },
+            }}
+            onClick={() => handleImageClick(image)}
+          >
+            <img
+              src={image.url}
+              alt={image.filename}
+              loading="lazy"
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+            />
+            <Box
+              className="chip-container"
+              sx={{
+                position: 'absolute',
+                bottom: 8,
+                left: 0,
+                right: 0,
+                display: 'flex',
+                justifyContent: 'space-between',
+                px: 1,
+                opacity: 0,
+                transition: 'opacity 0.3s ease-in-out',
+              }}
+            >
+              <Chip
+                label={image.type}
+                size="small"
+                sx={{
+                  backgroundColor: 'rgba(0,0,0,0.6)',
+                  color: '#fff',
+                  fontWeight: 'bold',
+                }}
+              />
+              <Chip
+                label={image.label}
+                size="small"
+                sx={{
+                  backgroundColor: 'rgba(0,0,0,0.6)',
+                  color: '#fff',
+                  fontWeight: 'bold',
+                }}
+              />
+            </Box>
+          </ImageListItem>
+        ))}
+      </ImageList>
     </LayoutBase>
   );
 };
