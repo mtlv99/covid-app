@@ -12,8 +12,7 @@ import {
   ToggleButton,
   Skeleton,
 } from '@mui/material';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import UploadIcon from '@mui/icons-material/Upload';
+import Add from '@mui/icons-material/Add';
 import { LayoutBase } from '../components/LayoutBase';
 import { useCovidStore, useUiStore } from '../../hooks';
 import { CovidModal } from '../components/CovidModal';
@@ -38,7 +37,8 @@ export const CovidPage = () => {
   }, [locationFilter]);
 
   const handleImageClick = (image) => {
-    startNewPrediction('list', image.url);
+    console.log('aaa', image);
+    startNewPrediction({ diagnoseOrigin: 'list', imageUrl: image.url, filter: image.label });
     // setActiveDiagnosis({
     //   // Si no tiene un id, significa que es un diagnosis nuevo.
     //   pregnancies: 0,
@@ -64,8 +64,7 @@ export const CovidPage = () => {
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log('Uploading file:', file);
-      // Lógica de subida real
+      startNewPrediction('upload', '', file);
     }
   };
 
@@ -97,10 +96,10 @@ export const CovidPage = () => {
           />
           <Button
             variant="contained"
-            startIcon={<UploadIcon />}
+            startIcon={<Add />}
             onClick={handleUploadClick}
           >
-            Subir Imagen
+            Agregar Imagen
           </Button>
         </Box>
       </Box>

@@ -1,7 +1,12 @@
+/* eslint-disable camelcase */
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  onSetActiveDiagnoseUrl, onLoadImageList, onSetActiveDiagnosePrediction,
-  onClearActiveDiagnose, onStartLoadingImageList, onOpenDiagnosisModal,
+  onSetActiveDiagnoseUrl,
+  onLoadImageList,
+  onSetActiveDiagnosePrediction,
+  onClearActiveDiagnose,
+  onStartLoadingImageList,
+  onOpenDiagnosisModal,
   onSetNewActiveDiagnose,
 } from '../store';
 import { covidApi } from '../api';
@@ -10,12 +15,47 @@ export const useCovidStore = () => {
   const dispatch = useDispatch();
   const { imageList, activeDiagnose, isLoadingImageList } = useSelector((state) => state.covid);
 
-  const startNewPrediction = (diagnoseOrigin = 'list', url = '', file = null) => {
+  const startNewPrediction = async ({
+    diagnoseOrigin = 'list', imageUrl = '', file = null, filter = '',
+  }) => {
     dispatch(onSetNewActiveDiagnose({ diagnoseOrigin }));
-    dispatch(onOpenDiagnosisModal());
+    try {
+      let response;
+
+      if (diagnoseOrigin === 'upload' && file) {
+        const formData = new FormData();
+        formData.append('image', file);
+        if (filter) formData.append('filter', filter);
+
+        response = await covidApi.post(`/upload/?${filter ? `filter=${filter}` : ''}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        dispatch(onOpenDiagnosisModal());
+        return;
+      }
+
+      if (diagnoseOrigin === 'list') {
+        dispatch(onSetActiveDiagnoseUrl({
+          raw_url: imageUrl,
+          processed_url: imageUrl,
+          filterType: filter || 'normal',
+        }));
+
+        dispatch(onOpenDiagnosisModal());
+      }
+
+      // const { raw_url, processed_url } = response.data;
+      // dispatch(onSetActiveDiagnoseUrl({
+      //   raw_url,
+      //   processed_url,
+      //   filterType: filter || 'normal',
+      // }));
+    } catch (error) {
+      console.error('Error al iniciar predicción', error);
+    }
   };
 
-  // { rawUrl, filterUrl, filterType }
   const setActiveDiagnosePrediction = (diagnose) => {
     dispatch(onSetActiveDiagnosePrediction(diagnose));
   };
@@ -34,7 +74,6 @@ export const useCovidStore = () => {
 
       dispatch(onLoadImageList(foundData));
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error cargando imagenes', error);
     }
   };
@@ -45,7 +84,8 @@ export const useCovidStore = () => {
     activeDiagnose,
     isLoadingImageList,
     hasSelectedImage: !!activeDiagnose.originalUrl,
-    // Metodos
+
+    // Métodos
     startNewPrediction,
     setActiveDiagnosePrediction,
     startLoadingImageList,
