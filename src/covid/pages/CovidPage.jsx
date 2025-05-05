@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   Typography,
   Box,
@@ -8,18 +8,33 @@ import {
   ImageList,
   ImageListItem,
   Chip,
+  ToggleButtonGroup,
+  ToggleButton,
+  Skeleton,
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import UploadIcon from '@mui/icons-material/Upload';
 import { LayoutBase } from '../components/LayoutBase';
 import { useCovidStore } from '../../hooks';
 
 export const CovidPage = () => {
-  const { imageList, startLoadingImageList } = useCovidStore();
+  const {
+    imageList,
+    startLoadingImageList,
+    isLoadingImageList,
+  } = useCovidStore();
+
   const [anchorEl, setAnchorEl] = useState(null);
+  const [locationFilter, setLocationFilter] = useState('');
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
-    startLoadingImageList({ pageNumber: 1, pageSize: 20 });
-  }, []);
+    const params = { pageNumber: 1, pageSize: 20 };
+    if (locationFilter) {
+      params.location = locationFilter;
+    }
+    startLoadingImageList(params);
+  }, [locationFilter]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -33,86 +48,128 @@ export const CovidPage = () => {
     console.log('Clicked image:', image);
   };
 
+  const handleFilterChange = (_, newFilter) => {
+    setLocationFilter(newFilter || '');
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      console.log('Uploading file:', file);
+      // Lógica de subida real
+    }
+  };
+
   return (
     <LayoutBase>
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-        <Typography variant="h4">Lista de Diagnósticos</Typography>
-        <Button
-          aria-controls="export-menu"
-          aria-haspopup="true"
-          onClick={handleClick}
-          endIcon={<ArrowDropDownIcon />}
-        >
-          Exportar
-        </Button>
-        <Menu
-          id="export-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={() => {}}>Exportar a CSV</MenuItem>
-        </Menu>
+        <Typography variant="h4">Seleccionar imagen</Typography>
       </Box>
 
-      <ImageList cols={4} gap={16}>
-        {imageList.results?.map((image) => (
-          <ImageListItem
-            key={image.filename}
-            sx={{
-              position: 'relative',
-              cursor: 'pointer',
-              overflow: 'hidden',
-              borderRadius: 2,
-              '&:hover .chip-container': {
-                opacity: 1,
-              },
-            }}
-            onClick={() => handleImageClick(image)}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <ToggleButtonGroup
+          value={locationFilter}
+          exclusive
+          onChange={handleFilterChange}
+          aria-label="Filtro por tipo"
+        >
+          <ToggleButton value="test">Test</ToggleButton>
+          <ToggleButton value="train">Train</ToggleButton>
+          <ToggleButton value="user_generated">User Generated</ToggleButton>
+        </ToggleButtonGroup>
+
+        <Box>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+            accept="image/*"
+          />
+          <Button
+            variant="contained"
+            startIcon={<UploadIcon />}
+            onClick={handleUploadClick}
           >
-            <img
-              src={image.url}
-              alt={image.filename}
-              loading="lazy"
-              style={{ width: '100%', height: 'auto', display: 'block' }}
+            Subir Imagen
+          </Button>
+        </Box>
+      </Box>
+
+      {isLoadingImageList ? (
+        <ImageList cols={4} gap={16}>
+          {Array.from({ length: 8 }).map(() => (
+            <Skeleton
+              key={crypto.randomUUID()}
+              variant="rectangular"
+              height={180}
+              sx={{ borderRadius: 2 }}
             />
-            <Box
-              className="chip-container"
+          ))}
+        </ImageList>
+      ) : (
+        <ImageList cols={4} gap={16}>
+          {imageList.results?.map((image) => (
+            <ImageListItem
+              key={image.filename}
               sx={{
-                position: 'absolute',
-                bottom: 8,
-                left: 0,
-                right: 0,
-                display: 'flex',
-                justifyContent: 'space-between',
-                px: 1,
-                opacity: 0,
-                transition: 'opacity 0.3s ease-in-out',
+                position: 'relative',
+                cursor: 'pointer',
+                overflow: 'hidden',
+                borderRadius: 2,
+                '&:hover .chip-container': {
+                  opacity: 1,
+                },
               }}
+              onClick={() => handleImageClick(image)}
             >
-              <Chip
-                label={image.type}
-                size="small"
-                sx={{
-                  backgroundColor: 'rgba(0,0,0,0.6)',
-                  color: '#fff',
-                  fontWeight: 'bold',
-                }}
+              <img
+                src={image.url}
+                alt={image.filename}
+                loading="lazy"
+                style={{ width: '100%', height: 'auto', display: 'block' }}
               />
-              <Chip
-                label={image.label}
-                size="small"
+              <Box
+                className="chip-container"
                 sx={{
-                  backgroundColor: 'rgba(0,0,0,0.6)',
-                  color: '#fff',
-                  fontWeight: 'bold',
+                  position: 'absolute',
+                  bottom: 8,
+                  left: 0,
+                  right: 0,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  px: 1,
+                  opacity: 0,
+                  transition: 'opacity 0.3s ease-in-out',
                 }}
-              />
-            </Box>
-          </ImageListItem>
-        ))}
-      </ImageList>
+              >
+                <Chip
+                  label={image.type}
+                  size="small"
+                  sx={{
+                    backgroundColor: 'rgba(0,0,0,0.6)',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                  }}
+                />
+                <Chip
+                  label={image.label}
+                  size="small"
+                  sx={{
+                    backgroundColor: 'rgba(0,0,0,0.6)',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                  }}
+                />
+              </Box>
+            </ImageListItem>
+          ))}
+        </ImageList>
+      )}
     </LayoutBase>
   );
 };
