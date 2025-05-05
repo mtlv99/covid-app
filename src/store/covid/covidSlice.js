@@ -12,6 +12,7 @@ export const covidSlice = createSlice({
       results: [],
     },
     activeDiagnose: {
+      diagnoseOrigin: '', // list or upload
       originalUrl: '',
       processed: {
         url: '',
@@ -24,6 +25,10 @@ export const covidSlice = createSlice({
     },
   },
   reducers: {
+    // { diagnoseOrigin } = payload
+    onSetNewActiveDiagnose: (state, { payload }) => {
+      state.activeDiagnose.diagnoseOrigin = payload.diagnoseOrigin;
+    },
     // { rawUrl, raw_url, processed_url } = payload
     onSetActiveDiagnoseUrl: (state, { payload }) => {
       state.activeDiagnose.url = payload.raw_url;
@@ -51,5 +56,5 @@ export const covidSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const {
   onSetActiveDiagnoseUrl, onSetActiveDiagnosePrediction, onClearActiveDiagnose,
-  onLoadImageList, onStartLoadingImageList,
+  onLoadImageList, onStartLoadingImageList, onSetNewActiveDiagnose,
 } = covidSlice.actions;

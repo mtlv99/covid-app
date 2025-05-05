@@ -1,7 +1,8 @@
 import { useDispatch, useSelector } from 'react-redux';
 import {
   onSetActiveDiagnoseUrl, onLoadImageList, onSetActiveDiagnosePrediction,
-  onClearActiveDiagnose, onStartLoadingImageList,
+  onClearActiveDiagnose, onStartLoadingImageList, onOpenDiagnosisModal,
+  onSetNewActiveDiagnose,
 } from '../store';
 import { covidApi } from '../api';
 
@@ -9,9 +10,9 @@ export const useCovidStore = () => {
   const dispatch = useDispatch();
   const { imageList, activeDiagnose, isLoadingImageList } = useSelector((state) => state.covid);
 
-  // { rawUrl, filterUrl, filterType }
-  const setActiveDiagnoseUrls = (diagnose) => {
-    dispatch(onSetActiveDiagnoseUrl(diagnose));
+  const startNewPrediction = (diagnoseOrigin = 'list', url = '', file = null) => {
+    dispatch(onSetNewActiveDiagnose({ diagnoseOrigin }));
+    dispatch(onOpenDiagnosisModal());
   };
 
   // { rawUrl, filterUrl, filterType }
@@ -45,7 +46,7 @@ export const useCovidStore = () => {
     isLoadingImageList,
     hasSelectedImage: !!activeDiagnose.originalUrl,
     // Metodos
-    setActiveDiagnoseUrls,
+    startNewPrediction,
     setActiveDiagnosePrediction,
     startLoadingImageList,
     clearActiveDiagnose,

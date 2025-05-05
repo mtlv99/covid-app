@@ -15,16 +15,17 @@ import {
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import UploadIcon from '@mui/icons-material/Upload';
 import { LayoutBase } from '../components/LayoutBase';
-import { useCovidStore } from '../../hooks';
+import { useCovidStore, useUiStore } from '../../hooks';
+import { CovidModal } from '../components/CovidModal';
 
 export const CovidPage = () => {
   const {
     imageList,
     startLoadingImageList,
     isLoadingImageList,
+    startNewPrediction,
   } = useCovidStore();
 
-  const [anchorEl, setAnchorEl] = useState(null);
   const [locationFilter, setLocationFilter] = useState('');
   const fileInputRef = useRef(null);
 
@@ -36,16 +37,20 @@ export const CovidPage = () => {
     startLoadingImageList(params);
   }, [locationFilter]);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleImageClick = (image) => {
-    console.log('Clicked image:', image);
+    startNewPrediction('list', image.url);
+    // setActiveDiagnosis({
+    //   // Si no tiene un id, significa que es un diagnosis nuevo.
+    //   pregnancies: 0,
+    //   glucose: 0,
+    //   blood_pressure: 0,
+    //   skin_thickness: 0,
+    //   insulin: 0,
+    //   bmi: 0,
+    //   age: 0,
+    //   created: new Date(),
+    // });
+    // openDiagnosisModal();
   };
 
   const handleFilterChange = (_, newFilter) => {
@@ -170,6 +175,7 @@ export const CovidPage = () => {
           ))}
         </ImageList>
       )}
+      <CovidModal />
     </LayoutBase>
   );
 };

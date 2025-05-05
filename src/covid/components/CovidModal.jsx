@@ -1,224 +1,137 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState } from 'react';
 import {
   Modal,
   Box,
   Typography,
-  TextField,
-  Button,
   Divider,
+  Button,
+  RadioGroup,
+  Radio,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  IconButton,
 } from '@mui/material';
-import { useCovidStore, useUiStore } from '../../hooks';
-import 'sweetalert2/dist/sweetalert2.min.css';
+import CloseIcon from '@mui/icons-material/Close';
+
+import { useUiStore } from '../../hooks';
 
 export const CovidModal = () => {
-  const { closeDiagnosisModal, isDiagnosisModalOpen } = useUiStore();
-  const { activeDiagnosis, startSavingDiagnosis } = useCovidStore();
+  const { isDiagnosisModalOpen, closeDiagnosisModal } = useUiStore();
+  const [selectedFilter, setSelectedFilter] = useState('normal');
+  const [originalImage, setOriginalImage] = useState(null);
+  const [filteredImage, setFilteredImage] = useState(null);
+  const [prediction, setPrediction] = useState('');
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-    reset,
-  } = useForm({
-    mode: 'onChange',
-    defaultValues: {
-      pregnancies: 0,
-      glucose: 0,
-      blood_pressure: 0,
-      skin_thickness: 0,
-      insulin: 0,
-      bmi: 0,
-      age: 0,
-    },
-  });
-
-  useEffect(() => {
-    if (activeDiagnosis) {
-      reset({
-        pregnancies: activeDiagnosis.pregnancies ?? 0,
-        glucose: activeDiagnosis.glucose ?? 0,
-        blood_pressure: activeDiagnosis.blood_pressure ?? 0,
-        skin_thickness: activeDiagnosis.skin_thickness ?? 0,
-        insulin: activeDiagnosis.insulin ?? 0,
-        bmi: activeDiagnosis.bmi ?? 0,
-        age: activeDiagnosis.age ?? 0,
-      });
-    } else {
-      reset({
-        pregnancies: 0,
-        glucose: 0,
-        blood_pressure: 0,
-        skin_thickness: 0,
-        insulin: 0,
-        bmi: 0,
-        age: 0,
-      });
-    }
-  }, [activeDiagnosis, reset]);
-
-  const onSubmit = async (data) => {
-    await startSavingDiagnosis(data);
-    closeDiagnosisModal();
+  const handleApplyFilter = () => {
+    setFilteredImage(originalImage);
   };
 
-  const onCloseModal = () => {
-    closeDiagnosisModal();
+  const handlePredict = () => {
+    setPrediction('Tienes covid');
   };
 
   return (
-    <Modal open={isDiagnosisModalOpen} onClose={onCloseModal}>
+    <Modal open={isDiagnosisModalOpen} onClose={closeDiagnosisModal}>
       <Box
         sx={{
           position: 'absolute',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: { xs: '90%', sm: 400 },
+          width: '90%',
+          maxWidth: 1000,
           bgcolor: 'background.paper',
           boxShadow: 24,
           borderRadius: 2,
-          p: 3,
+          p: 4,
         }}
       >
-        <Typography variant="h6" align="center">Nuevo Diagnóstico</Typography>
-        <Divider sx={{ my: 2 }} />
-
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-          <TextField
-            label="Embarazos"
-            type="number"
-            fullWidth
-            margin="normal"
-            error={!!errors.pregnancies}
-            helperText={errors.pregnancies?.message}
-            inputProps={{ step: 1, min: 0 }}
-            {...register('pregnancies', {
-              required: 'Este campo es requerido',
-              pattern: {
-                value: /^[0-9]+$/,
-                message: 'Debe ser un número entero',
-              },
-              min: {
-                value: 0,
-                message: 'No puede ser negativo',
-              },
-            })}
-          />
-
-          <TextField
-            label="Glucosa"
-            type="number"
-            fullWidth
-            margin="normal"
-            error={!!errors.glucose}
-            helperText={errors.glucose?.message}
-            inputProps={{ step: 0.01, min: 0.01 }}
-            {...register('glucose', {
-              required: 'Este campo es requerido',
-              min: {
-                value: 0.01,
-                message: 'Debe ser mayor que 0',
-              },
-            })}
-          />
-
-          <TextField
-            label="Presión Sanguínea"
-            type="number"
-            fullWidth
-            margin="normal"
-            error={!!errors.blood_pressure}
-            helperText={errors.blood_pressure?.message}
-            inputProps={{ step: 0.01, min: 0.01 }}
-            {...register('blood_pressure', {
-              required: 'Este campo es requerido',
-              min: {
-                value: 0.01,
-                message: 'Debe ser mayor que 0',
-              },
-            })}
-          />
-
-          <TextField
-            label="Grosor de la Piel"
-            type="number"
-            fullWidth
-            margin="normal"
-            error={!!errors.skin_thickness}
-            helperText={errors.skin_thickness?.message}
-            inputProps={{ step: 0.01, min: 0.01 }}
-            {...register('skin_thickness', {
-              required: 'Este campo es requerido',
-              min: {
-                value: 0.01,
-                message: 'Debe ser mayor que 0',
-              },
-            })}
-          />
-
-          <TextField
-            label="Insulina"
-            type="number"
-            fullWidth
-            margin="normal"
-            error={!!errors.insulin}
-            helperText={errors.insulin?.message}
-            inputProps={{ step: 0.01, min: 0.01 }}
-            {...register('insulin', {
-              required: 'Este campo es requerido',
-              min: {
-                value: 0.01,
-                message: 'Debe ser mayor que 0',
-              },
-            })}
-          />
-
-          <TextField
-            label="Índice de Masa Corporal"
-            type="number"
-            fullWidth
-            margin="normal"
-            error={!!errors.bmi}
-            helperText={errors.bmi?.message}
-            inputProps={{ step: 0.01, min: 0.01 }}
-            {...register('bmi', {
-              required: 'Este campo es requerido',
-              min: {
-                value: 0.01,
-                message: 'Debe ser mayor que 0',
-              },
-            })}
-          />
-
-          <TextField
-            label="Edad"
-            type="number"
-            fullWidth
-            margin="normal"
-            error={!!errors.age}
-            helperText={errors.age?.message}
-            inputProps={{ step: 1, min: 0 }}
-            {...register('age', {
-              required: 'Este campo es requerido',
-              min: {
-                value: 0,
-                message: 'No puede ser negativo',
-              },
-            })}
-          />
-
-          <Divider sx={{ my: 2 }} />
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            disabled={!isValid}
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h6">Nuevo Diagnóstico</Typography>
+          <IconButton
+            aria-label="cerrar"
+            onClick={closeDiagnosisModal}
+            size="small"
           >
-            Guardar
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Divider sx={{ mb: 2 }} />
+
+        <Box display="flex" gap={3}>
+          {/* Panel de filtros */}
+          <Box
+            flex={1}
+            border="1px solid black"
+            borderRadius={1}
+            p={2}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+          >
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Filtros:</FormLabel>
+              <RadioGroup
+                row
+                value={selectedFilter}
+                onChange={(e) => setSelectedFilter(e.target.value)}
+              >
+                <FormControlLabel value="normal" control={<Radio />} label="Normal" />
+                <FormControlLabel value="bilateral" control={<Radio />} label="Bilateral" />
+                <FormControlLabel value="canny" control={<Radio />} label="Canny" />
+              </RadioGroup>
+            </FormControl>
+
+            <Button
+              variant="outlined"
+              sx={{ mt: 4, width: '80%' }}
+              onClick={handleApplyFilter}
+            >
+              Aplicar filtro
+            </Button>
+          </Box>
+
+          {/* Imágenes */}
+          <Box flex={2} display="flex" gap={2} justifyContent="center">
+            <Box
+              width="100%"
+              height={250}
+              border="2px solid black"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Typography>[Imagen original]</Typography>
+            </Box>
+            <Box
+              width="100%"
+              height={250}
+              border="2px solid black"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Typography>[imagen con filtro]</Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Botón de predicción */}
+        <Box display="flex" justifyContent="center" mt={4}>
+          <Button
+            variant="outlined"
+            onClick={handlePredict}
+          >
+            Predecir
           </Button>
+        </Box>
+
+        {/* Resultado */}
+        <Box mt={2} textAlign="center">
+          <Typography>
+            {prediction || 'Tienes covid / Neumonía / Estás sano'}
+          </Typography>
         </Box>
       </Box>
     </Modal>
