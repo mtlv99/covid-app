@@ -23,11 +23,13 @@ export const useCovidStore = () => {
     dispatch(onClearActiveDiagnose());
   };
 
-  const startLoadingImageList = async ({ pageNumber = 1, pageSize = 5 }) => {
+  const startLoadingImageList = async ({ pageNumber = 1, pageSize = 5, location = '' }) => {
     try {
       dispatch(onStartLoadingImageList());
 
-      const { data: foundData } = await covidApi.post(`/images/?page=${pageNumber}&page_size=${pageSize}`);
+      const url = `/images/?page=${pageNumber}&page_size=${pageSize}`;
+      const locationParam = location ? `&location=${location}` : '';
+      const { data: foundData } = await covidApi.post(url + locationParam);
 
       dispatch(onLoadImageList(foundData));
     } catch (error) {

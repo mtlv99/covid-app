@@ -14,11 +14,11 @@ import { CovidTable } from '../components/CovidTable';
 import { LayoutBase } from '../components/LayoutBase';
 
 export const CovidPage = () => {
-  const { diagnoses, startLoadingDiagnoses } = useCovidStore();
+  const { diagnoses, startLoadingImageList } = useCovidStore();
   const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
-    startLoadingDiagnoses();
+    startLoadingImageList({ pageNumber: 1, pageSize: 5 });
   }, []);
 
   const handleClick = (event) => {
