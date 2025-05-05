@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import { diabetesSlice } from './diabetes/diabetesSlice';
+import { covidSlice } from './covid/covidSlice';
 import { uiSlice } from './ui/uiSlice';
 
 export const store = configureStore({
   reducer: {
     ui: uiSlice.reducer,
-    diabetes: diabetesSlice.reducer,
+    covid: covidSlice.reducer,
   },
   // Este middleware es necesario para ignorar el error que muestra el toolkit por defecto
   // al usar valores que no son serializables, en este caso las fechas.

@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AppRouter } from './router';
 import { store } from './store';
 
-export const DiabetesApp = () => (
+export const CovidApp = () => (
   <Provider store={store}>
     <BrowserRouter>
       <AppRouter />

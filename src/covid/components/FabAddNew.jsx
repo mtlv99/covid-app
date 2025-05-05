@@ -1,10 +1,10 @@
 import { Fab } from '@mui/material';
 import { Add } from '@mui/icons-material';
-import { useDiabetesStore, useUiStore } from '../../hooks';
+import { useCovidStore, useUiStore } from '../../hooks';
 
 export const FabAddNew = () => {
   const { openDiagnosisModal } = useUiStore();
-  const { setActiveDiagnosis } = useDiabetesStore();
+  const { setActiveDiagnosis } = useCovidStore();
 
   const handleClickNew = () => {
     setActiveDiagnosis({
@@ -15,10 +15,8 @@ export const FabAddNew = () => {
       skin_thickness: 0,
       insulin: 0,
       bmi: 0,
-      diabetes_pedigree_function: 0,
       age: 0,
       created: new Date(),
-      has_diabetes: null,
     });
     openDiagnosisModal();
   };

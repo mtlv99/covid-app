@@ -9,16 +9,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Paper from '@mui/material/Paper';
 import Chip from '@mui/material/Chip';
 import { Button, IconButton } from '@mui/material';
-import { useDiabetesStore } from '../../hooks';
+import { useCovidStore } from '../../hooks';
 
-const getDiabetesStatus = (hasDiabetes) => {
-  const hasDiabetesColor = hasDiabetes ? 'error' : 'success';
-  const hasDiabetesLabel = hasDiabetes ? 'Tiene diabetes' : 'No tiene diabetes';
-  return <Chip label={hasDiabetesLabel} color={hasDiabetesColor} />;
+const getDiagnoseStatus = (diagnose) => {
+  const diagnoseColor = diagnose ? 'error' : 'success';
+  const diagnoseLabel = diagnose ? 'Tiene' : 'No tiene';
+  return <Chip label={diagnoseLabel} color={diagnoseColor} />;
 };
 
-export const DiabetesTable = ({ data = [] }) => {
-  const { startDeletingDiagnosis } = useDiabetesStore();
+export const CovidTable = ({ data = [] }) => {
+  const { startDeletingDiagnosis } = useCovidStore();
 
   const handleDiagnosisDelete = (id) => {
     Swal.fire({
@@ -69,10 +69,8 @@ export const DiabetesTable = ({ data = [] }) => {
               <TableCell align="right">{row.skin_thickness}</TableCell>
               <TableCell align="right">{row.insulin}</TableCell>
               <TableCell align="right">{row.bmi}</TableCell>
-              <TableCell align="right">{row.diabetes_pedigree_function}</TableCell>
               <TableCell align="right">{row.age}</TableCell>
               <TableCell align="right">{new Date(row.created).toLocaleDateString()}</TableCell>
-              <TableCell align="right">{getDiabetesStatus(row.has_diabetes)}</TableCell>
               <TableCell align="right">
                 <IconButton aria-label="delete" onClick={() => handleDiagnosisDelete(row.id)}>
                   <DeleteIcon />

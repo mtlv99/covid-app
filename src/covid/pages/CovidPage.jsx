@@ -7,15 +7,14 @@ import {
   Button,
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { DiabetesModal } from '../components/DiabetesModal';
+import { CovidModal } from '../components/CovidModal';
 import { FabAddNew } from '../components/FabAddNew';
-import { useDiabetesStore } from '../../hooks';
-import { DiabetesTable } from '../components/DiabetesTable';
+import { useCovidStore } from '../../hooks';
+import { CovidTable } from '../components/CovidTable';
 import { LayoutBase } from '../components/LayoutBase';
-import { exportToCSV } from '../utils/export-utils';
 
-export const DiabetesPage = () => {
-  const { diagnoses, startLoadingDiagnoses } = useDiabetesStore();
+export const CovidPage = () => {
+  const { diagnoses, startLoadingDiagnoses } = useCovidStore();
   const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
@@ -28,11 +27,6 @@ export const DiabetesPage = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleExportCSV = () => {
-    exportToCSV(diagnoses);
-    handleClose();
   };
 
   return (
@@ -54,13 +48,13 @@ export const DiabetesPage = () => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleExportCSV}>Exportar a CSV</MenuItem>
+          <MenuItem onClick={() => {}}>Exportar a CSV</MenuItem>
         </Menu>
       </Box>
 
-      <DiabetesTable data={diagnoses} />
+      <CovidTable data={diagnoses} />
 
-      <DiabetesModal />
+      <CovidModal />
       <FabAddNew />
     </LayoutBase>
   );

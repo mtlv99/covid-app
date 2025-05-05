@@ -1,6 +1,6 @@
-# Diabetes - App
+# Covid - App
 
-Web application for diabetes management. You can find the backend [here](https://github.com/mtlv99/diabetes-backend).
+Web application for covid management. You can find the backend [here](https://github.com/mtlv99/covid-backend).
 
 Authors:
 - Marco León Vargas

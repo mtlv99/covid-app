@@ -4,11 +4,11 @@ import Swal from 'sweetalert2';
 import {
   onAddNewDiagnosis, onDeleteDiagnosis, onSetActiveDiagnosis, onUpdateDiagnosis, onLoadDiagnoses,
 } from '../store';
-import { diabetesApi } from '../api';
+import { covidApi } from '../api';
 
-export const useDiabetesStore = () => {
+export const useCovidStore = () => {
   const dispatch = useDispatch();
-  const { diagnoses, activeDiagnosis } = useSelector((state) => state.diabetes);
+  const { diagnoses, activeDiagnosis } = useSelector((state) => state.covid);
 
   const setActiveDiagnosis = (diagnosis) => {
     dispatch(onSetActiveDiagnosis(diagnosis));
@@ -19,7 +19,7 @@ export const useDiabetesStore = () => {
     // uno existente, es por medio de la existencia de un `id`.
     // eslint-disable-next-line no-underscore-dangle
     try {
-      const { data } = await diabetesApi.post('/diagnoses/', diagnosis);
+      const { data } = await covidApi.post('/diagnoses/', diagnosis);
 
       dispatch(onAddNewDiagnosis({
         ...diagnosis,
@@ -50,7 +50,7 @@ export const useDiabetesStore = () => {
 
   const startDeletingDiagnosis = async (id) => {
     try {
-      await diabetesApi.delete('/diagnoses/', {
+      await covidApi.delete('/diagnoses/', {
         data: { id },
       });
 
@@ -74,7 +74,7 @@ export const useDiabetesStore = () => {
 
   const startLoadingDiagnoses = async () => {
     try {
-      const { data } = await diabetesApi.get('/diagnoses');
+      const { data } = await covidApi.get('/diagnoses');
       const foundDiagnoses = data.Diagnosis;
 
       dispatch(onLoadDiagnoses(foundDiagnoses));

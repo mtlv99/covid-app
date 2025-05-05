@@ -6,7 +6,7 @@ export const Navbar = () => (
     <span className="navbar-brand">
       <LocalHospitalIcon />
     </span>
-    <p>Diabetes App</p>
+    <p>Covid App</p>
     <button type="button" className="btn btn-outline-danger" onClick={() => {}}>
       <i className="fas fa-sign-out-alt" />
         &nbsp;

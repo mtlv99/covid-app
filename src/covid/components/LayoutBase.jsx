@@ -31,7 +31,7 @@ export const LayoutBase = ({ children }) => {
           <LocalHospitalIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 2 }} />
 
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Diabetes App
+            Covid App
           </Typography>
 
           <Typography variant="p" sx={{ mr: 1 }}>AAAA</Typography>

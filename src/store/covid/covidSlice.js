@@ -2,8 +2,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 /* eslint-disable no-param-reassign */
-export const diabetesSlice = createSlice({
-  name: 'diabetes',
+export const covidSlice = createSlice({
+  name: 'covid',
   initialState: {
     isLoadingDiagnoses: true,
     diagnoses: [],
@@ -59,4 +59,4 @@ export const diabetesSlice = createSlice({
 export const {
   onSetActiveDiagnosis, onClearActiveDiagnosis, onAddNewDiagnosis,
   onUpdateDiagnosis, onDeleteDiagnosis, onLoadDiagnoses, onLogoutDiagnoses,
-} = diabetesSlice.actions;
+} = covidSlice.actions;

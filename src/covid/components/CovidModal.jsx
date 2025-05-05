@@ -9,12 +9,12 @@ import {
   Button,
   Divider,
 } from '@mui/material';
-import { useDiabetesStore, useUiStore } from '../../hooks';
+import { useCovidStore, useUiStore } from '../../hooks';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
-export const DiabetesModal = () => {
+export const CovidModal = () => {
   const { closeDiagnosisModal, isDiagnosisModalOpen } = useUiStore();
-  const { activeDiagnosis, startSavingDiagnosis } = useDiabetesStore();
+  const { activeDiagnosis, startSavingDiagnosis } = useCovidStore();
 
   const {
     register,
@@ -30,7 +30,6 @@ export const DiabetesModal = () => {
       skin_thickness: 0,
       insulin: 0,
       bmi: 0,
-      diabetes_pedigree_function: 0,
       age: 0,
     },
   });
@@ -44,7 +43,6 @@ export const DiabetesModal = () => {
         skin_thickness: activeDiagnosis.skin_thickness ?? 0,
         insulin: activeDiagnosis.insulin ?? 0,
         bmi: activeDiagnosis.bmi ?? 0,
-        diabetes_pedigree_function: activeDiagnosis.diabetes_pedigree_function ?? 0,
         age: activeDiagnosis.age ?? 0,
       });
     } else {
@@ -55,7 +53,6 @@ export const DiabetesModal = () => {
         skin_thickness: 0,
         insulin: 0,
         bmi: 0,
-        diabetes_pedigree_function: 0,
         age: 0,
       });
     }
@@ -187,23 +184,6 @@ export const DiabetesModal = () => {
             helperText={errors.bmi?.message}
             inputProps={{ step: 0.01, min: 0.01 }}
             {...register('bmi', {
-              required: 'Este campo es requerido',
-              min: {
-                value: 0.01,
-                message: 'Debe ser mayor que 0',
-              },
-            })}
-          />
-
-          <TextField
-            label="Función Pedigree"
-            type="number"
-            fullWidth
-            margin="normal"
-            error={!!errors.diabetes_pedigree_function}
-            helperText={errors.diabetes_pedigree_function?.message}
-            inputProps={{ step: 0.01, min: 0.01 }}
-            {...register('diabetes_pedigree_function', {
               required: 'Este campo es requerido',
               min: {
                 value: 0.01,

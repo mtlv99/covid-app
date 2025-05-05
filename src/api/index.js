@@ -1,1 +1,1 @@
-export { default as diabetesApi } from './diabetesApi';
+export { default as covidApi } from './covidApi';

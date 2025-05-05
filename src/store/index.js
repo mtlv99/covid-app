@@ -1,3 +1,3 @@
 export * from './ui/uiSlice';
-export * from './diabetes/diabetesSlice';
+export * from './covid/covidSlice';
 export * from './store';
