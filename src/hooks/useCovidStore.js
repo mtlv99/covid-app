@@ -16,44 +16,10 @@ export const useCovidStore = () => {
   const { imageList, activeDiagnose, isLoadingImageList } = useSelector((state) => state.covid);
 
   const startNewPrediction = async ({
-    diagnoseOrigin = 'list', imageUrl = '', file = null, filter = '',
+    diagnoseOrigin = 'list', originalUrl = '',
   }) => {
-    dispatch(onSetNewActiveDiagnose({ diagnoseOrigin }));
-    try {
-      let response;
-
-      if (diagnoseOrigin === 'upload' && file) {
-        const formData = new FormData();
-        formData.append('image', file);
-        if (filter) formData.append('filter', filter);
-
-        response = await covidApi.post(`/upload/?${filter ? `filter=${filter}` : ''}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-
-        dispatch(onOpenDiagnosisModal());
-        return;
-      }
-
-      if (diagnoseOrigin === 'list') {
-        dispatch(onSetActiveDiagnoseUrl({
-          raw_url: imageUrl,
-          processed_url: imageUrl,
-          filterType: filter || 'normal',
-        }));
-
-        dispatch(onOpenDiagnosisModal());
-      }
-
-      // const { raw_url, processed_url } = response.data;
-      // dispatch(onSetActiveDiagnoseUrl({
-      //   raw_url,
-      //   processed_url,
-      //   filterType: filter || 'normal',
-      // }));
-    } catch (error) {
-      console.error('Error al iniciar predicción', error);
-    }
+    dispatch(onSetNewActiveDiagnose({ diagnoseOrigin, originalUrl }));
+    dispatch(onOpenDiagnosisModal());
   };
 
   const setActiveDiagnosePrediction = (diagnose) => {
@@ -63,6 +29,29 @@ export const useCovidStore = () => {
   const clearActiveDiagnose = () => {
     dispatch(onClearActiveDiagnose());
   };
+
+  const fetchProcessedImage = async (imageUrl) => {
+    try {
+      // if (diagnoseOrigin === 'upload' && file) {
+      //   const formData = new FormData();
+      //   formData.append('image', file);
+      //   if (filter) formData.append('filter', filter);
+
+      //   response = await covidApi.post(`/process_image/?${filter ? `filter=${filter}` : ''}`, formData, {
+      //     headers: { 'Content-Type': 'multipart/form-data' },
+      //   });
+
+      //   dispatch(onOpenDiagnosisModal());
+      //   return;
+      // }
+
+      const response = await covidApi.get(`/process_image/?url=${imageUrl}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching processed image', error);
+      return null;
+    }
+  }
 
   const startLoadingImageList = async ({ pageNumber = 1, pageSize = 5, location = '' }) => {
     try {

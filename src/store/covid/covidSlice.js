@@ -13,6 +13,7 @@ export const covidSlice = createSlice({
     },
     activeDiagnose: {
       diagnoseOrigin: '', // list or upload
+      id: null,
       originalUrl: '',
       processed: {
         url: '',
@@ -25,9 +26,10 @@ export const covidSlice = createSlice({
     },
   },
   reducers: {
-    // { diagnoseOrigin } = payload
+    // { diagnoseOrigin, originalUrl } = payload
     onSetNewActiveDiagnose: (state, { payload }) => {
       state.activeDiagnose.diagnoseOrigin = payload.diagnoseOrigin;
+      state.activeDiagnose.originalUrl = payload.originalUrl;
     },
     // { rawUrl, raw_url, processed_url } = payload
     onSetActiveDiagnoseUrl: (state, { payload }) => {

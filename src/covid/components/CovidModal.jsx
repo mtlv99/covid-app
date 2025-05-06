@@ -51,6 +51,63 @@ export const CovidModal = () => {
     }, 1500);
   };
 
+  const getImageComponent = ({ imageUrl, isFilter = false }) => {
+    console.log({ imageUrl, isFilter });
+
+    const label = isFilter ? 'Filtrada' : 'Original';
+    const predictionLabel = isFilter ? 'Predicción (filtro):' : 'Predicción (original):';
+
+    return (
+      <Box key={label} flex={1} display="flex" flexDirection="column" alignItems="center">
+        <Box
+          position="relative"
+          border="1px solid #ccc"
+          borderRadius={2}
+          height={250}
+          width="100%"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={label}
+              style={{ maxHeight: '100%', maxWidth: '100%' }}
+            />
+          ) : (
+            <Typography variant="body2">
+              [Selecciona un filtro]
+            </Typography>
+          )}
+          <Chip
+            label={label}
+            size="small"
+            sx={{
+              position: 'absolute',
+              bottom: 8,
+              left: 8,
+              backgroundColor: 'rgba(0,0,0,0.6)',
+              color: '#fff',
+            }}
+          />
+        </Box>
+        <Box mt={1}>
+          <Typography variant="subtitle2" textAlign="center">{predictionLabel}</Typography>
+          <Typography
+            variant="body2"
+            textAlign="center"
+            sx={{ color: predictionColor }}
+          >
+            {activeDiagnose?.prediction?.label
+              ? `${activeDiagnose.prediction.label} (${Math.round(activeDiagnose.prediction.confidence * 100)}%)`
+              : 'Sin resultado'}
+          </Typography>
+        </Box>
+      </Box>
+    );
+  };
+
   return (
     <Modal open={isDiagnosisModalOpen} onClose={closeDiagnosisModal}>
       <Box
@@ -100,69 +157,8 @@ export const CovidModal = () => {
           </Box>
 
           <Box flex={2} display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={2}>
-            {[{
-              label: 'Original',
-              imageUrl: activeDiagnose?.url,
-              alt: 'original',
-              predictionLabel: 'Predicción (original):',
-            }, {
-              label: 'Filtrada',
-              imageUrl: activeDiagnose?.processed?.url,
-              alt: 'procesada',
-              predictionLabel: 'Predicción (filtro):',
-            }].map(({
-              label, imageUrl, alt, predictionLabel,
-            }) => (
-              <Box key={label} flex={1} display="flex" flexDirection="column" alignItems="center">
-                <Box
-                  position="relative"
-                  border="1px solid #ccc"
-                  borderRadius={2}
-                  height={250}
-                  width="100%"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt={alt}
-                      style={{ maxHeight: '100%', maxWidth: '100%' }}
-                    />
-                  ) : (
-                    <Typography variant="body2">
-                      [Imagen
-                      {label.toLowerCase()}
-                      ]
-                    </Typography>
-                  )}
-                  <Chip
-                    label={label}
-                    size="small"
-                    sx={{
-                      position: 'absolute',
-                      bottom: 8,
-                      left: 8,
-                      backgroundColor: 'rgba(0,0,0,0.6)',
-                      color: '#fff',
-                    }}
-                  />
-                </Box>
-                <Box mt={1}>
-                  <Typography variant="subtitle2" textAlign="center">{predictionLabel}</Typography>
-                  <Typography
-                    variant="body2"
-                    textAlign="center"
-                    sx={{ color: predictionColor }}
-                  >
-                    {activeDiagnose?.prediction?.label
-                      ? `${activeDiagnose.prediction.label} (${Math.round(activeDiagnose.prediction.confidence * 100)}%)`
-                      : 'Sin resultado'}
-                  </Typography>
-                </Box>
-              </Box>
-            ))}
+            { getImageComponent({ imageUrl: activeDiagnose.originalUrl, isFilter: false }) }
+            { getImageComponent({ imageUrl: activeDiagnose.processed.url, isFilter: true }) }
           </Box>
         </Box>
 
