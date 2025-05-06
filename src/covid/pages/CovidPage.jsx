@@ -23,6 +23,7 @@ export const CovidPage = () => {
     startLoadingImageList,
     isLoadingImageList,
     startNewPrediction,
+    uploadNewImage,
   } = useCovidStore();
 
   const [locationFilter, setLocationFilter] = useState('');
@@ -39,18 +40,6 @@ export const CovidPage = () => {
   const handleImageClick = (image) => {
     console.log('aaa', image);
     startNewPrediction({ diagnoseOrigin: 'list', originalUrl: image.url });
-    // setActiveDiagnosis({
-    //   // Si no tiene un id, significa que es un diagnosis nuevo.
-    //   pregnancies: 0,
-    //   glucose: 0,
-    //   blood_pressure: 0,
-    //   skin_thickness: 0,
-    //   insulin: 0,
-    //   bmi: 0,
-    //   age: 0,
-    //   created: new Date(),
-    // });
-    // openDiagnosisModal();
   };
 
   const handleFilterChange = (_, newFilter) => {
@@ -64,7 +53,7 @@ export const CovidPage = () => {
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
     if (file) {
-      startNewPrediction('upload', '', file);
+      uploadNewImage(file);
     }
   };
 
