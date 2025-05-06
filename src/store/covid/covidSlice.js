@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-underscore-dangle */
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -53,6 +54,10 @@ export const covidSlice = createSlice({
       state.activeDiagnose.processed.prediction.label = payload.label;
       state.activeDiagnose.processed.prediction.confidence = payload.confidence;
     },
+    onClearActiveDiagnosePredictions: (state) => {
+      state.activeDiagnose.original.prediction = covidSlice.getInitialState().activeDiagnose.original.prediction;
+      state.activeDiagnose.processed.prediction = covidSlice.getInitialState().activeDiagnose.processed.prediction;
+    },
     onClearActiveDiagnose: (state) => {
       state.activeDiagnose = covidSlice.getInitialState().activeDiagnose;
     },
@@ -71,4 +76,5 @@ export const {
   onUpdateActiveDiagnoseFilteredImage, onSetActiveDiagnoseOriginalPrediction,
   onClearActiveDiagnose, onLoadImageList, onStartLoadingImageList,
   onSetNewActiveDiagnose, onSetActiveDiagnoseFilteredPrediction,
+  onClearActiveDiagnosePredictions,
 } = covidSlice.actions;

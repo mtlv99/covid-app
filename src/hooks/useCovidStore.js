@@ -9,6 +9,7 @@ import {
   onStartLoadingImageList,
   onOpenDiagnosisModal,
   onSetNewActiveDiagnose,
+  onClearActiveDiagnosePredictions,
 } from '../store';
 import { covidApi } from '../api';
 import { getMediaSourcePathFromUrl } from '../helpers';
@@ -75,6 +76,7 @@ export const useCovidStore = () => {
   };
 
   const startLoadingPredictions = async () => {
+    dispatch(onClearActiveDiagnosePredictions());
     try {
       // Original image prediction
       const response = await covidApi.post('/predict/', {
