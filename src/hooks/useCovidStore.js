@@ -1,38 +1,31 @@
-/* eslint-disable camelcase */
+/* eslint-disable no-console, camelcase */
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  onSetActiveDiagnoseUrl,
+  onUpdateActiveDiagnoseFilteredImage,
   onLoadImageList,
-  onSetActiveDiagnosePrediction,
+  onSetActiveDiagnoseOriginalPrediction,
+  onSetActiveDiagnoseFilteredPrediction,
   onClearActiveDiagnose,
   onStartLoadingImageList,
   onOpenDiagnosisModal,
   onSetNewActiveDiagnose,
 } from '../store';
 import { covidApi } from '../api';
+import { getMediaSourcePathFromUrl } from '../helpers';
 
 export const useCovidStore = () => {
   const dispatch = useDispatch();
   const { imageList, activeDiagnose, isLoadingImageList } = useSelector((state) => state.covid);
 
   const startNewPrediction = async ({
-    diagnoseOrigin = 'list', originalUrl = '',
+    diagnoseOrigin = 'list', originalUrl = '', sourcePath = '',
   }) => {
     dispatch(onClearActiveDiagnose());
-    dispatch(onSetNewActiveDiagnose({ diagnoseOrigin, originalUrl }));
+    dispatch(onSetNewActiveDiagnose({ diagnoseOrigin, originalUrl, sourcePath }));
     dispatch(onOpenDiagnosisModal());
   };
 
-  const setActiveDiagnosePrediction = (diagnose) => {
-    dispatch(onSetActiveDiagnosePrediction(diagnose));
-  };
-
-  const clearActiveDiagnose = () => {
-    dispatch(onClearActiveDiagnose());
-  };
-
   const uploadNewImage = async (file) => {
-    console.log('uploadNewImage', file);
     dispatch(onClearActiveDiagnose());
     try {
       if (file) {
@@ -44,16 +37,28 @@ export const useCovidStore = () => {
         });
 
         const originalUrl = response.data.raw_url;
-        startNewPrediction({ diagnoseOrigin: 'upload', originalUrl });
+        const sourcePath = response.data.source_path;
+        startNewPrediction({ diagnoseOrigin: 'upload', originalUrl, sourcePath });
         dispatch(onOpenDiagnosisModal());
       }
 
       return true;
     } catch (error) {
-      console.error('Error fetching processed image', error);
+      console.error('Error subiendo imagen', error);
       return null;
     }
-  }
+  };
+
+  const startLoadingFilteredImage = async ({ filterType = 'bilateral' }) => {
+    try {
+      const response = await covidApi.post(`/process_image/?filter=${filterType}&source_path=${activeDiagnose.sourcePath}`);
+      const processedUrl = response.data.processed_url;
+
+      dispatch(onUpdateActiveDiagnoseFilteredImage({ processedUrl, filterType }));
+    } catch (error) {
+      console.error('Error cargando filtro', error);
+    }
+  };
 
   const startLoadingImageList = async ({ pageNumber = 1, pageSize = 5, location = '' }) => {
     try {
@@ -69,6 +74,35 @@ export const useCovidStore = () => {
     }
   };
 
+  const startLoadingPredictions = async () => {
+    try {
+      // Original image prediction
+      const response = await covidApi.post('/predict/', {
+        source_path: getMediaSourcePathFromUrl(activeDiagnose.original.originalUrl),
+        filter: activeDiagnose.processed.filterType,
+      });
+      const { prediction, confidence } = response.data;
+
+      dispatch(onSetActiveDiagnoseOriginalPrediction({ label: prediction, confidence }));
+
+      // Filtered image prediction
+      const response_filter = await covidApi.post('/predict/', {
+        source_path: getMediaSourcePathFromUrl(activeDiagnose.processed.url),
+        filter: activeDiagnose.processed.filterType,
+      });
+      const { prediction: prediction_filter, confidence: confidence_filter } = response_filter.data;
+
+      // eslint-disable-next-line max-len
+      dispatch(onSetActiveDiagnoseFilteredPrediction({ label: prediction_filter, confidence: confidence_filter }));
+    } catch (error) {
+      console.error('Error cargando predicciones', error);
+    }
+  };
+
+  const clearActiveDiagnose = () => {
+    dispatch(onClearActiveDiagnose());
+  };
+
   return {
     // Propiedades
     imageList,
@@ -78,8 +112,9 @@ export const useCovidStore = () => {
 
     // Métodos
     startNewPrediction,
-    setActiveDiagnosePrediction,
     startLoadingImageList,
+    startLoadingFilteredImage,
+    startLoadingPredictions,
     clearActiveDiagnose,
     uploadNewImage,
   };

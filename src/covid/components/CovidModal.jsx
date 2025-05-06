@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React, { useState } from 'react';
 import {
   Modal,
@@ -19,46 +20,50 @@ import { useUiStore, useCovidStore } from '../../hooks';
 
 export const CovidModal = () => {
   const { isDiagnosisModalOpen, closeDiagnosisModal } = useUiStore();
-  const { activeDiagnose, startNewPrediction } = useCovidStore();
+  const { activeDiagnose, startLoadingFilteredImage, startLoadingPredictions } = useCovidStore();
 
   const [selectedFilter, setSelectedFilter] = useState('normal');
   const [isLoading, setIsLoading] = useState(false);
   const [isPredicting, setIsPredicting] = useState(false);
 
-  // eslint-disable-next-line no-nested-ternary
-  const predictionColor = activeDiagnose?.prediction?.label === 'covid'
-    ? 'error.main'
-    : activeDiagnose?.prediction?.label === 'neumonía'
-      ? 'warning.main'
-      : 'success.main';
+  const getPredictionData = (predictionObj) => {
+    // eslint-disable-next-line no-nested-ternary
+    const color = predictionObj.prediction === 'covid'
+      ? 'error.main'
+      : predictionObj.prediction === 'neumonía'
+        ? 'warning.main'
+        : 'success.main';
 
+    const { prediction, confidence } = predictionObj;
+
+    return {
+      color,
+      prediction,
+      confidence,
+      available: !!predictionObj.prediction.confidence,
+    };
+  };
   const handleApplyFilter = async () => {
     setIsLoading(true);
-    await startNewPrediction(
-      activeDiagnose.diagnoseOrigin,
-      activeDiagnose.url,
-      null,
-      selectedFilter,
-    );
+    await startLoadingFilteredImage({ filterType: selectedFilter });
     setIsLoading(false);
   };
 
-  const handlePredict = () => {
+  const handlePredict = async () => {
     setIsPredicting(true);
-    setTimeout(() => {
-      alert('Predicción enviada');
-      setIsPredicting(false);
-    }, 1500);
+    await startLoadingPredictions();
+    setIsPredicting(false);
   };
 
-  const getImageComponent = ({ imageUrl, isFilter = false }) => {
-    console.log({ imageUrl, isFilter });
-
-    const label = isFilter ? 'Filtrada' : 'Original';
+  const getImageComponent = ({ imageUrl, isFilter = false, predictionObj }) => {
+    const labelHtml = isFilter ? 'Filtrada' : 'Original';
     const predictionLabel = isFilter ? 'Predicción (filtro):' : 'Predicción (original):';
+    const {
+      color, prediction: { confidence, label }, available,
+    } = getPredictionData(predictionObj);
 
     return (
-      <Box key={label} flex={1} display="flex" flexDirection="column" alignItems="center">
+      <Box key={labelHtml} flex={1} display="flex" flexDirection="column" alignItems="center">
         <Box
           position="relative"
           border="1px solid #ccc"
@@ -72,7 +77,7 @@ export const CovidModal = () => {
           {imageUrl ? (
             <img
               src={imageUrl}
-              alt={label}
+              alt={labelHtml}
               style={{ maxHeight: '100%', maxWidth: '100%' }}
             />
           ) : (
@@ -81,7 +86,7 @@ export const CovidModal = () => {
             </Typography>
           )}
           <Chip
-            label={label}
+            label={labelHtml}
             size="small"
             sx={{
               position: 'absolute',
@@ -97,10 +102,10 @@ export const CovidModal = () => {
           <Typography
             variant="body2"
             textAlign="center"
-            sx={{ color: predictionColor }}
+            sx={{ color }}
           >
-            {activeDiagnose?.prediction?.label
-              ? `${activeDiagnose.prediction.label} (${Math.round(activeDiagnose.prediction.confidence * 100)}%)`
+            {available
+              ? `${label} (${Math.round(confidence * 100)}%)`
               : 'Sin resultado'}
           </Typography>
         </Box>
@@ -142,7 +147,7 @@ export const CovidModal = () => {
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
               >
-                <FormControlLabel value="normal" control={<Radio />} label="Normal" />
+                <FormControlLabel value="normal" control={<Radio />} label="Normal" disabled />
                 <FormControlLabel value="bilateral" control={<Radio />} label="Bilateral" />
                 <FormControlLabel value="canny" control={<Radio />} label="Canny" />
               </RadioGroup>
@@ -150,15 +155,14 @@ export const CovidModal = () => {
             <Button
               variant="outlined"
               onClick={handleApplyFilter}
-              disabled={!activeDiagnose?.url || isLoading}
             >
               {isLoading ? <CircularProgress size={20} /> : 'Aplicar Filtro'}
             </Button>
           </Box>
 
           <Box flex={2} display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={2}>
-            { getImageComponent({ imageUrl: activeDiagnose.originalUrl, isFilter: false }) }
-            { getImageComponent({ imageUrl: activeDiagnose.processed.url, isFilter: true }) }
+            {getImageComponent({ imageUrl: activeDiagnose.original.originalUrl, isFilter: false, predictionObj: activeDiagnose.original })}
+            {getImageComponent({ imageUrl: activeDiagnose.processed.url, isFilter: true, predictionObj: activeDiagnose.processed })}
           </Box>
         </Box>
 

@@ -38,8 +38,7 @@ export const CovidPage = () => {
   }, [locationFilter]);
 
   const handleImageClick = (image) => {
-    console.log('aaa', image);
-    startNewPrediction({ diagnoseOrigin: 'list', originalUrl: image.url });
+    startNewPrediction({ diagnoseOrigin: 'list', originalUrl: image.url, sourcePath: image.source_path });
   };
 
   const handleFilterChange = (_, newFilter) => {
@@ -108,7 +107,7 @@ export const CovidPage = () => {
         <ImageList cols={4} gap={16}>
           {imageList.results?.map((image) => (
             <ImageListItem
-              key={image.filename}
+              key={image.source_path}
               sx={{
                 position: 'relative',
                 cursor: 'pointer',
@@ -122,7 +121,7 @@ export const CovidPage = () => {
             >
               <img
                 src={image.url}
-                alt={image.filename}
+                alt={image.source_path}
                 loading="lazy"
                 style={{ width: '100%', height: 'auto', display: 'block' }}
               />

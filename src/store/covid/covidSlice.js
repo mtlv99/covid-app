@@ -13,34 +13,45 @@ export const covidSlice = createSlice({
     },
     activeDiagnose: {
       diagnoseOrigin: '', // list or upload
-      id: null,
-      originalUrl: '',
+      sourcePath: null, // used as an id
+      original: {
+        originalUrl: '',
+        prediction: {
+          label: '',
+          confidence: 0,
+        },
+      },
       processed: {
         url: '',
         filterType: '',
-      },
-      prediction: {
-        label: '',
-        confidence: 0,
+        prediction: {
+          label: '',
+          confidence: 0,
+        },
       },
     },
   },
   reducers: {
-    // { diagnoseOrigin, originalUrl } = payload
+    // { diagnoseOrigin, originalUrl, sourcePath } = payload
     onSetNewActiveDiagnose: (state, { payload }) => {
+      state.activeDiagnose.original.originalUrl = payload.originalUrl;
       state.activeDiagnose.diagnoseOrigin = payload.diagnoseOrigin;
-      state.activeDiagnose.originalUrl = payload.originalUrl;
+      state.activeDiagnose.sourcePath = payload.sourcePath;
     },
-    // { rawUrl, raw_url, processed_url } = payload
-    onSetActiveDiagnoseUrl: (state, { payload }) => {
-      state.activeDiagnose.url = payload.raw_url;
-      state.activeDiagnose.processed.url = payload.processed_url;
+    // { processed_url, filterType } = payload
+    onUpdateActiveDiagnoseFilteredImage: (state, { payload }) => {
+      state.activeDiagnose.processed.url = payload.processedUrl;
       state.activeDiagnose.processed.filterType = payload.filterType;
     },
     // { prediction, confidence } = payload
-    onSetActiveDiagnosePrediction: (state, { payload }) => {
-      state.activeDiagnose.prediction.label = payload.label;
-      state.activeDiagnose.prediction.confidence = payload.confidence;
+    onSetActiveDiagnoseOriginalPrediction: (state, { payload }) => {
+      state.activeDiagnose.original.prediction.label = payload.label;
+      state.activeDiagnose.original.prediction.confidence = payload.confidence;
+    },
+    // { prediction, confidence } = payload
+    onSetActiveDiagnoseFilteredPrediction: (state, { payload }) => {
+      state.activeDiagnose.processed.prediction.label = payload.label;
+      state.activeDiagnose.processed.prediction.confidence = payload.confidence;
     },
     onClearActiveDiagnose: (state) => {
       state.activeDiagnose = covidSlice.getInitialState().activeDiagnose;
@@ -57,6 +68,7 @@ export const covidSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
-  onSetActiveDiagnoseUrl, onSetActiveDiagnosePrediction, onClearActiveDiagnose,
-  onLoadImageList, onStartLoadingImageList, onSetNewActiveDiagnose,
+  onUpdateActiveDiagnoseFilteredImage, onSetActiveDiagnoseOriginalPrediction,
+  onClearActiveDiagnose, onLoadImageList, onStartLoadingImageList,
+  onSetNewActiveDiagnose, onSetActiveDiagnoseFilteredPrediction,
 } = covidSlice.actions;
