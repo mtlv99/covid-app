@@ -1,6 +1,6 @@
 # Covid - App
 
-Web application for covid management. You can find the backend [here](https://github.com/mtlv99/covid-backend).
+Web application for covid and pneumonia predictions. You can find the backend [here](https://github.com/mtlv99/covid-backend).
 
 Authors:
 - Marco León Vargas
@@ -15,7 +15,6 @@ Authors:
 - **Routing**: React Router DOM
 - **Form Handling**: React Hook Form
 - **HTTP Client**: Axios
-- **Alerts & Notifications**: SweetAlert2
 - **Linting**: ESLint with Airbnb config
 
 ## Available Scripts
