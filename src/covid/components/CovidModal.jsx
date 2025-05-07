@@ -155,9 +155,15 @@ export const CovidModal = () => {
             <Button
               variant="outlined"
               onClick={handleApplyFilter}
+              sx={{ mt: 1 }}
             >
               {isLoading ? <CircularProgress size={20} /> : 'Aplicar Filtro'}
             </Button>
+
+            <Box display="flex" flexDirection="column" gap={1} justifyContent="space-between" mt={2}>
+              <Typography variant="p" sx={{ color: 'text.secondary' }}>El sistema puede ayudar a predecir casos con exactidad, sin embargo puede equivocarse.</Typography>
+              <Typography variant="p" sx={{ color: 'text.secondary' }}>Si sientes algun síntoma, por favor acude a un médico.</Typography>
+            </Box>
           </Box>
 
           <Box flex={2} display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={2}>

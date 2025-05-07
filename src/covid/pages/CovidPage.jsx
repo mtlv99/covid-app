@@ -59,10 +59,14 @@ export const CovidPage = () => {
   return (
     <LayoutBase>
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-        <Typography variant="h4">Seleccionar imagen</Typography>
+        <Typography variant="h4">Bienvenido (a)</Typography>
       </Box>
 
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={4}>
+        <Typography variant="p">Por favor selecciona o sube una imagen para empezar.</Typography>
+      </Box>
+
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={5}>
         <ToggleButtonGroup
           value={locationFilter}
           exclusive
