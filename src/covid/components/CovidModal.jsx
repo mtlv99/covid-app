@@ -61,6 +61,7 @@ export const CovidModal = () => {
     const {
       color, prediction: { confidence, label }, available,
     } = getPredictionData(predictionObj);
+    const roundedConfidence = (confidence * 100).toFixed(2);
 
     return (
       <Box key={labelHtml} flex={1} display="flex" flexDirection="column" alignItems="center">
@@ -105,7 +106,7 @@ export const CovidModal = () => {
             sx={{ color }}
           >
             {available
-              ? `${label} (${Math.round(confidence * 100)}%)`
+              ? `${label} (${roundedConfidence}%)`
               : 'Sin resultado'}
           </Typography>
         </Box>

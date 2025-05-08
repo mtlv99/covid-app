@@ -81,7 +81,7 @@ export const useCovidStore = () => {
       // Original image prediction
       const response = await covidApi.post('/predict/', {
         source_path: getMediaSourcePathFromUrl(activeDiagnose.original.originalUrl),
-        filter: activeDiagnose.processed.filterType,
+        filter: 'raw',
       });
       const { prediction, confidence } = response.data;
 
