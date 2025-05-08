@@ -162,7 +162,7 @@ export const CovidModal = () => {
             </Button>
 
             <Box display="flex" flexDirection="column" gap={1} justifyContent="space-between" mt={2}>
-              <Typography variant="p" sx={{ color: 'text.secondary' }}>El sistema puede ayudar a predecir casos con exactidad, sin embargo puede equivocarse.</Typography>
+              <Typography variant="p" sx={{ color: 'text.secondary' }}>El sistema puede ayudar a predecir casos con exactitud, sin embargo puede equivocarse.</Typography>
               <Typography variant="p" sx={{ color: 'text.secondary' }}>Si sientes algun síntoma, por favor acude a un médico.</Typography>
             </Box>
           </Box>
